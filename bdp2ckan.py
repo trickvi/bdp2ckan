@@ -96,8 +96,7 @@ def submit_to_ckan(host, apikey, data):
     headers = {'Authorization': apikey}
     response = requests.post(package_create_url, headers=headers, json=data)
 
-    # Why create a nice response if you can make a crappy one?
-    return response.status_code
+    return (response.status_code, response.text)
 
 
 @click.command()
@@ -150,10 +149,12 @@ def bdp2ckan(schema, host, apikey, datapackage):
     # CKAN instance will have a schema that accepts these extras
     data_dict.update(create_budget_data_package_extras(descriptor))
 
-    # We're going to make it really hard for people to know what went wrong
-    # if something fails by only checking status code and raise a generic error
-    if submit_to_ckan(host, apikey, data_dict) != 200:
-        raise IOError('Unable to submit budget data package to CKAN')
+    (status, message) = submit_to_ckan(host, apikey, data_dict)
+    if status != 200:
+        raise IOError(
+            'Unable to submit budget data package to CKAN: {0}'.format(
+                message)
+        )
 
 if __name__ == '__main__':
     bdp2ckan()
