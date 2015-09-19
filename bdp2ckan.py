@@ -106,8 +106,10 @@ def submit_to_ckan(host, apikey, data):
               help='CKAN instance to upload to')
 @click.option('--apikey', default=None, nargs=1,
               help='CKAN user API key of uploader')
+@click.option('--organization', default=None, nargs=1,
+              help='CKAN organisation the dataset should belong to')
 @click.argument('datapackage')
-def bdp2ckan(schema, host, apikey, datapackage):
+def bdp2ckan(schema, host, apikey, organization, datapackage):
     """
     Import a budget data package into CKAN
     """
@@ -123,6 +125,8 @@ def bdp2ckan(schema, host, apikey, datapackage):
 
     # Extract CKAN metadata from the data package
     data_dict = create_ckan_package_dict(descriptor)
+    if organization is not None:
+        data_dict['owner_org'] = organization
 
     # Fix urls in resources because paths must be turned into urls
     # because we don't support file uploads.
