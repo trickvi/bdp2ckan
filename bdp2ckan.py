@@ -153,6 +153,19 @@ def bdp2ckan(schema, host, apikey, organization, datapackage):
     # CKAN instance will have a schema that accepts these extras
     data_dict.update(create_budget_data_package_extras(descriptor))
 
+    # Grab currencies from measures
+    currencies = set()
+    for measure in descriptor['mapping']['measures'].itervalues():
+        if 'currency' in measure:
+            currencies.add(measure['currency'])
+    if currencies:
+        if len(currencies) == 1:
+            currency = currencies.pop()
+        else:
+            currency = list(currencies)
+        data_dict['extras'].append(
+            {'key': 'currency', 'value': currency})
+    
     (status, message) = submit_to_ckan(host, apikey, data_dict)
     if status != 200:
         raise IOError(
