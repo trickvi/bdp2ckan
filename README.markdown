@@ -18,7 +18,7 @@ To see how it works type:
 
 But it's very simple. You basically just provide a schema file (we provide it for you because we're super nice), the CKAN host, your API key for that CKAN host and a link to the datapackage.json descriptor file.
 
-    python bdp2ckan.py --schema schemas/0.3.0.json --host 'http://localhost:5000' --apikey <my-awesome-api-key> https://raw.githubusercontent.com/os-data/boost-armenia/master/datapackage.json
+    python bdp2ckan.py --schema schemas/0.3.0.json --host 'http://localhost:5000' --apikey <my-awesome-api-key> --organization <organization-id-or-name> https://raw.githubusercontent.com/os-data/boost-armenia/master/datapackage.json
 
 ## License
 
