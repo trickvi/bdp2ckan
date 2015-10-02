@@ -20,7 +20,7 @@ import json
 import jsonschema
 import requests
 import urlparse
-
+import os.path
 
 def create_ckan_package_dict(descriptor):
     """
@@ -102,6 +102,8 @@ def submit_to_ckan(host, apikey, data):
 @click.command()
 @click.option('--schema', default=None, nargs=1, type=click.File('r'),
               help='Schema to validate against')
+@click.option('--countries', default=None, nargs=1, type=click.File('r'),
+              help='JSON file with a dictionary of country code to name map')
 @click.option('--host', default='localhost', nargs=1,
               help='CKAN instance to upload to')
 @click.option('--apikey', default=None, nargs=1,
@@ -109,7 +111,7 @@ def submit_to_ckan(host, apikey, data):
 @click.option('--organization', default=None, nargs=1,
               help='CKAN organisation the dataset should belong to')
 @click.argument('datapackage')
-def bdp2ckan(schema, host, apikey, organization, datapackage):
+def bdp2ckan(schema, countries, host, apikey, organization, datapackage):
     """
     Import a budget data package into CKAN
     """
@@ -123,6 +125,15 @@ def bdp2ckan(schema, host, apikey, organization, datapackage):
         schema_obj = json.load(schema)
         jsonschema.validate(descriptor, schema_obj)
 
+    # Load countries from a default location if they haven't been supplied
+    # Default location is data/countries.json
+    if countries is None:
+        dirname = os.path.dirname(os.path.realpath(__file__))
+        filename = os.path.join(dirname, "data", "countries.json")
+        countries = open(filename)
+    country_obj = json.load(countries)
+    countries.close()
+        
     # Extract CKAN metadata from the data package
     data_dict = create_ckan_package_dict(descriptor)
     if organization is not None:
@@ -153,6 +164,16 @@ def bdp2ckan(schema, host, apikey, organization, datapackage):
     # CKAN instance will have a schema that accepts these extras
     data_dict.update(create_budget_data_package_extras(descriptor))
 
+    # Overwrite title to more descriptive of what the dataset contains
+    # Instead of using the data package title, we use:
+    #   "Country | Direction | Fiscal period"
+    possible_title_values = [
+        country_obj.get(descriptor.get('countryCode', ''), None),
+        descriptor.get('direction', None),
+        descriptor.get('fiscalPeriod', None)]
+    data_dict['title'] = ' | '.join(
+        [v for v in possible_title_values if v is not None])
+    
     # Grab currencies from measures
     currencies = set()
     for measure in descriptor['mapping']['measures'].itervalues():
