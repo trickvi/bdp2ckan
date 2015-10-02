@@ -1,30 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "Budget Data Package",
-    "description": "Budget Data Package is a lightweight and user-oriented format for publishing and consuming fiscal data. Budget data packages are made of simple and universal components. They can be produced from ordinary spreadsheet software and used in any environment.",
+    "title": "Fiscal Data Package",
+    "description": "Fiscal Data Package is a lightweight and user-oriented format for publishing and consuming fiscal data. Fiscal data packages are made of simple and universal components. They can be produced from ordinary spreadsheet software and used in any environment.",
     "type": "object",
     "properties": {
-	"licences": {
-	    "title": "Licenses",
-	    "description": "The license(s) under which this package is published.",
-	    "type": "array",
-	    "items": {
-		"type": "object",
-		"properties": {
-		    "id": { "type": "string" },
-		    "url": { "type": "string" }
-		},
-		"anyOf": [
-		    { "title": "id required", "required": ["id"] },
-		    { "title": "url required", "required": ["url"] }
-		]
-	    }
-	},
-	"license": {
-	    "title": "License",
-	    "description": "The license under which this package is published.",
-	    "type": "string"
-	},
 	"countryCode" : {
 	    "title": "ISO 3166-1 Alpha-2 Country code",
 	    "description": "A valid 2 -digit ISO country code (ISO 3166-1 alpha-2) ,or, an array of valid ISO codes (if this relates to multiple countries). This field is for listing the country of countries associated to this data. For example, if this the budget for country then you would put that country’s ISO code.",
@@ -89,7 +68,7 @@
 		    "properties": {
 			"dimensionType": {
 			    "type": "string",
-			    "enum": ["entity", "classification", "program"]
+			    "enum": ["datetime", "entity", "classification", "project"]
 			},
 			"fields": {			    
 			    "type": "object",
@@ -99,11 +78,24 @@
 				    "properties": {
 					"source": {
 					    "type": "string"
-					},
-					"primaryKey":  {
-					    "type": "boolean"
 					}
-				    }
+				    },
+				    "anyOf": [
+					{
+                                            "properties": {
+                                                "primaryKey":  {
+                                                    "type": "boolean"
+					        }
+                                            }
+                                        },
+					{
+                                            "properties": {
+                                                "primaryKey":  {
+                                                    "type": "string"
+					        }
+                                            }
+                                        }
+                                    ]
 				}
 			    }
 			}
@@ -114,6 +106,7 @@
 	"title": { "$ref": "https://raw.githubusercontent.com/dataprotocols/schemas/master/data-package.json#/properties/title" },
 	"name": { "$ref": "https://raw.githubusercontent.com/dataprotocols/schemas/master/data-package.json#/properties/name" },
 	"description": { "$ref": "https://raw.githubusercontent.com/dataprotocols/schemas/master/data-package.json#/properties/description" },
+	"license": { "$ref": "https://raw.githubusercontent.com/dataprotocols/schemas/master/data-package.json#/properties/license" },
 	"homepage": { "$ref": "https://raw.githubusercontent.com/dataprotocols/schemas/master/data-package.json#/properties/homepage" },
 	"version": { "$ref": "https://raw.githubusercontent.com/dataprotocols/schemas/master/data-package.json#/properties/version" },
 	"author": { "$ref": "https://raw.githubusercontent.com/dataprotocols/schemas/master/data-package.json#/properties/author" },
